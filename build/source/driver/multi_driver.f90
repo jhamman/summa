@@ -526,6 +526,7 @@ call read_param(iRunMode,checkHRU,startGRU,nHRU,nGRU,typeStruct,mparStruct,bparS
 ! (5d) compute derived model variables that are pretty much constant for the basin as a whole
 ! *****************************************************************************
 ! loop through GRUs
+!$OMP PARALLEL DO
 do iGRU=1,nGRU
 
  ! calculate the fraction of runoff in future time steps
@@ -563,7 +564,7 @@ call read_icond(restartFile,                   & ! intent(in):    name of initia
                 nGRU,                          & ! intent(in):    number of response units
                 mparStruct,                    & ! intent(in):    model parameters
                 progStruct,                    & ! intent(inout): model prognostic variables
-                indxStruct,                    & ! intent(inout): model indices 
+                indxStruct,                    & ! intent(inout): model indices
                 err,message)                     ! intent(out):   error control
 call handle_err(err,message)
 
@@ -758,6 +759,7 @@ do modelTimeStep=1,numtim
  !  (if computeVegFlux changes, then the number of state variables changes, and we need to reoranize the data structures)
  ! compute the exposed LAI and SAI and whether veg is buried by snow
  if(modelTimeStep==1)then
+  !$OMP PARALLEL DO
   do iGRU=1,nGRU
    do iHRU=1,gru_struc(iGRU)%hruCount
 
@@ -834,6 +836,7 @@ do modelTimeStep=1,numtim
  ! ****************************************************************************
 
  ! initialize variables
+ !$OMP PARALLEL DO
  do iGRU=1,nGRU
 
   ! initialize runoff variables
